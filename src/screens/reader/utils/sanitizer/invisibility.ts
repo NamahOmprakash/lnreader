@@ -19,9 +19,9 @@ const HIDDEN_STYLE_REGEXES = [
  * Common class names used on novel aggregator sites for honeypot traps.
  */
 const HONEYPOT_CLASS_REGEXES = [
-  /\b(?:hidden|invisible|d-none|screen-reader-text|sr-only)\b/i,
-  /\b(?:tts-trap|honey-?pot|anti-?scrap|fake-?text|decoy-?text)\b/i,
-  /\b(?:hide-text|offscreen|zero-size)\b/i,
+  /(?:^|\s)(?:hidden|invisible|d-none|screen-reader-text|sr-only)(?:\s|$)/i,
+  /(?:^|\s)(?:tts-trap|honey-?pot|anti-?scrap|fake-?text|decoy-?text)(?:\s|$)/i,
+  /(?:^|\s)(?:hide-text|offscreen|zero-size)(?:\s|$)/i,
 ];
 
 /**
