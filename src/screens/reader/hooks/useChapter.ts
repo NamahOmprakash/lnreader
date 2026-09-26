@@ -10,6 +10,7 @@ import { ChapterInfo, NovelInfo } from '@database/types';
 import {
   useAppSettings,
   useChapterGeneralSettings,
+  useChapterReaderSettings,
   useLibrarySettings,
   useTrackedNovel,
   useTracker,
@@ -75,6 +76,7 @@ export default function useChapter(
     useVolumeButtons,
     volumeButtonsOffset,
   } = useChapterGeneralSettings();
+  const { tts } = useChapterReaderSettings();
   const { incognitoMode } = useLibrarySettings();
   const { timeTrackingEnabled, inactivityTimeoutMs } = useAppSettings();
   const [error, setError] = useState<string>();
@@ -178,6 +180,11 @@ export default function useChapter(
           novel.name,
           chap.name,
           text,
+          {
+            stripHiddenElements: tts?.strictSanitization !== false,
+            flattenInlineSpans: tts?.strictSanitization !== false,
+            deduplicateAdjacent: tts?.strictSanitization !== false,
+          }
         );
         if (!text.trim()) {
           chapterTextCache.remove(chap.id);
@@ -191,7 +198,13 @@ export default function useChapter(
 
       return pending;
     },
-    [chapterTextCache, loadChapterText, novel.name, novel.pluginId],
+    [
+      chapterTextCache,
+      loadChapterText,
+      novel.name,
+      novel.pluginId,
+      tts?.strictSanitization,
+    ],
   );
 
   const prefetchChapter = useCallback(
@@ -511,6 +524,16 @@ export default function useChapter(
     setError('');
     getChapter();
   }, [chapterTextCache, getChapter]);
+
+  const strictSanitizationRef = useRef(tts?.strictSanitization !== false);
+  useEffect(() => {
+    const isStrict = tts?.strictSanitization !== false;
+    if (strictSanitizationRef.current !== isStrict) {
+      strictSanitizationRef.current = isStrict;
+      chapterTextCache.clear();
+      refetch();
+    }
+  }, [tts?.strictSanitization, chapterTextCache, refetch]);
 
   /**
    * Everything except `hidden`, which toggles on every tap on the page. Keeping
