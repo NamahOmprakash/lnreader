@@ -160,6 +160,8 @@ export default function useChapter(
     [novel.pluginId],
   );
 
+  const strictSanitizationRef = useRef(tts?.strictSanitization !== false);
+
   /**
    * Returns render-ready (sanitized) chapter HTML, reusing the novel-scoped
    * cache. Sanitizing before caching keeps `sanitize-html` – which is the most
@@ -175,15 +177,16 @@ export default function useChapter(
       }
 
       const pending = loadChapterText(chap).then(text => {
+        const isStrict = strictSanitizationRef.current;
         const sanitized = sanitizeChapterText(
           novel.pluginId,
           novel.name,
           chap.name,
           text,
           {
-            stripHiddenElements: tts?.strictSanitization !== false,
-            flattenInlineSpans: tts?.strictSanitization !== false,
-            deduplicateAdjacent: tts?.strictSanitization !== false,
+            stripHiddenElements: isStrict,
+            flattenInlineSpans: isStrict,
+            deduplicateAdjacent: isStrict,
           }
         );
         if (!text.trim()) {
@@ -203,7 +206,6 @@ export default function useChapter(
       loadChapterText,
       novel.name,
       novel.pluginId,
-      tts?.strictSanitization,
     ],
   );
 
@@ -525,7 +527,6 @@ export default function useChapter(
     getChapter();
   }, [chapterTextCache, getChapter]);
 
-  const strictSanitizationRef = useRef(tts?.strictSanitization !== false);
   useEffect(() => {
     const isStrict = tts?.strictSanitization !== false;
     if (strictSanitizationRef.current !== isStrict) {

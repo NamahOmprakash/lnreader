@@ -61,15 +61,19 @@ export function deduplicateAdjacentParagraphs(
     const $p = $(p);
     const text = normalizeTtsText($p.text());
 
-    // Skip empty paragraphs or short phrases (e.g. dialogue)
-    if (text.length < 30) {
+    // Skip empty paragraphs or meaningless characters
+    if (text.length < 5) {
       return;
     }
 
     let isDuplicate = false;
     for (const recent of recentParagraphs) {
       const similarity = computeTokenSimilarity(text, recent.text);
-      if (similarity >= threshold) {
+      if (similarity === 1.0) {
+        isDuplicate = true;
+        break;
+      }
+      if (similarity >= threshold && text.length >= 30) {
         isDuplicate = true;
         break;
       }

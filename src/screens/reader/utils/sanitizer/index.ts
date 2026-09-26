@@ -80,10 +80,8 @@ export function sanitizeChapter(
     deduplicateAdjacentParagraphs($, windowSize, threshold);
   }
 
-  // Extract cleaned HTML
   const cleanHtml = $.html() || '';
 
-  // Extract readable normalized text for TTS and metrics
   let rawText = '';
   const paragraphs = $('p');
   if (paragraphs.length > 0) {
@@ -101,7 +99,6 @@ export function sanitizeChapter(
 
   const cleanText = normalizeTtsText(rawText);
 
-  // 5. Evaluate Anomaly Detection Gate
   const anomalyReport = evaluateAnomalyGate(rawHtml, cleanText, options);
 
   return {
