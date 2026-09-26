@@ -201,6 +201,12 @@ window.tts = new (function () {
     if (!ele.hasChildNodes()) {
       return false;
     }
+    if (
+      ele.getAttribute &&
+      (ele.getAttribute('aria-hidden') === 'true' || ele.hasAttribute('hidden'))
+    ) {
+      return false;
+    }
     for (let i = 0; i < ele.childNodes.length; i++) {
       if (!this.readableNodeNames.includes(ele.childNodes.item(i).nodeName)) {
         return false;
@@ -212,6 +218,7 @@ window.tts = new (function () {
   this.normalizeText = text => {
     if (!text) return '';
     const normalized = text
+      .replace(/[\u200B-\u200D\uFEFF\u00AD\u2060\u180E]/g, '')
       .replace(/\s+/g, ' ')
       .trim()
       .replace(/^["'“”‘’]+|["'“”‘’]+$/g, '')
