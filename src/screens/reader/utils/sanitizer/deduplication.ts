@@ -46,13 +46,13 @@ export function computeTokenSimilarity(textA: string, textB: string): number {
  *
  * @param $ Cheerio root instance
  * @param windowSize Number of preceding paragraphs to check against (default: 2)
- * @param threshold Similarity threshold above which a paragraph is considered a clone (default: 0.85)
+ * @param threshold Similarity threshold above which a paragraph is considered a clone (default: 0.95)
  * @returns Number of duplicate paragraphs pruned
  */
 export function deduplicateAdjacentParagraphs(
   $: CheerioAPI,
   windowSize = 2,
-  threshold = 0.85,
+  threshold = 0.95,
 ): number {
   let prunedCount = 0;
   const recentParagraphs: { text: string; $el: ReturnType<CheerioAPI> }[] = [];
@@ -61,8 +61,8 @@ export function deduplicateAdjacentParagraphs(
     const $p = $(p);
     const text = normalizeTtsText($p.text());
 
-    // Skip empty paragraphs or very short single-word phrases (e.g. "...", "1", etc.)
-    if (text.length < 10) {
+    // Skip empty paragraphs or short phrases (e.g. dialogue)
+    if (text.length < 30) {
       return;
     }
 

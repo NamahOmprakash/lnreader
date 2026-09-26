@@ -1,1 +1,1 @@
-export * from './sanitizer/index.ts';
+export * from './sanitizer/index';

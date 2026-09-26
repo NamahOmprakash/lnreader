@@ -1,6 +1,4 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
-import { sanitizeChapter } from '../sanitizer.ts';
+import { sanitizeChapter } from '../sanitizer';
 
 describe('LNReader App Chapter Sanitizer', () => {
   it('strips elements with display:none and honeypot classes', () => {
@@ -16,11 +14,11 @@ describe('LNReader App Chapter Sanitizer', () => {
 
     const result = sanitizeChapter(rawHtml);
 
-    assert.ok(result.cleanHtml.includes('Visible sentence 1.'));
-    assert.ok(result.cleanHtml.includes('Visible sentence 2.'));
-    assert.ok(!result.cleanHtml.includes('Invisible honey-pot trap text!'));
-    assert.ok(!result.cleanHtml.includes('Another stealth bot detector'));
-    assert.ok(!result.cleanHtml.includes('Decoy paragraph for scrapers'));
+    expect(result.cleanHtml).toContain('Visible sentence 1.');
+    expect(result.cleanHtml).toContain('Visible sentence 2.');
+    expect(result.cleanHtml).not.toContain('Invisible honey-pot trap text!');
+    expect(result.cleanHtml).not.toContain('Another stealth bot detector');
+    expect(result.cleanHtml).not.toContain('Decoy paragraph for scrapers');
   });
 
   it('unwraps fragmented spans and removes zero-width characters for smooth TTS', () => {
@@ -30,10 +28,10 @@ describe('LNReader App Chapter Sanitizer', () => {
 
     const result = sanitizeChapter(rawHtml);
 
-    assert.ok(!result.cleanHtml.includes('<span>'));
-    assert.ok(!result.cleanHtml.includes('\u200B'));
-    assert.ok(!result.cleanHtml.includes('\uFEFF'));
-    assert.strictEqual(result.cleanText, 'The spell has begun.');
+    expect(result.cleanHtml).not.toContain('<span>');
+    expect(result.cleanHtml).not.toContain('\u200B');
+    expect(result.cleanHtml).not.toContain('\uFEFF');
+    expect(result.cleanText).toBe('The spell has begun.');
   });
 
   it('removes adjacent cloned paragraphs (fixes TTS double-reading trap)', () => {
@@ -48,8 +46,8 @@ describe('LNReader App Chapter Sanitizer', () => {
     const result = sanitizeChapter(rawHtml);
 
     const matches = (result.cleanHtml.match(/Sunny crept cautiously/g) || []).length;
-    assert.strictEqual(matches, 1, 'Should only contain Sunny crept once');
-    assert.ok(result.cleanHtml.includes('nightmare creature'));
+    expect(matches).toBe(1);
+    expect(result.cleanHtml).toContain('nightmare creature');
   });
 
   it('flags anomaly when high levels of filler text or extreme duplicates occur', () => {
@@ -61,8 +59,10 @@ describe('LNReader App Chapter Sanitizer', () => {
     `;
 
     const result = sanitizeChapter(rawHtml);
-    assert.strictEqual(result.isClean, false);
-    assert.strictEqual(result.anomalyReport.isAnomaly, true);
-    assert.ok(result.anomalyReport.reasons.some(r => r.includes('Lorem ipsum')));
+    expect(result.isClean).toBe(false);
+    expect(result.anomalyReport.isAnomaly).toBe(true);
+    expect(
+      result.anomalyReport.reasons.some((r: string) => r.includes('Lorem ipsum'))
+    ).toBe(true);
   });
 });

@@ -3,7 +3,7 @@ import type { CheerioAPI } from 'cheerio';
 /**
  * Regex matching invisible zero-width unicode artifacts injected by novel aggregators.
  */
-const ZERO_WIDTH_REGEX = /[\u200B\u200C\u200D\uFEFF\u00AD\u2060\u180E]/g;
+const ZERO_WIDTH_REGEX = /[\u200B\uFEFF\u00AD\u2060\u180E]/g;
 
 /**
  * Strips zero-width characters and normalizes irregular whitespace.

@@ -13,7 +13,7 @@ export function applyNovelProfile($: CheerioAPI, profile: NovelProfile): void {
         try {
           $(selector).remove();
         } catch (e) {
-          console.warn(`[ProfileApplier] Invalid selector "${selector}":`, e);
+          // ignore
         }
       }
     }
@@ -33,7 +33,7 @@ export function applyNovelProfile($: CheerioAPI, profile: NovelProfile): void {
         }
         compiledRegexes.push(new RegExp(regexPattern, flags));
       } catch (e) {
-        console.warn(`[ProfileApplier] Invalid regex pattern "${pattern}":`, e);
+        // ignore
       }
     }
 

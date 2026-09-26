@@ -4,7 +4,7 @@ import { flattenInlineElements, normalizeTtsText } from './flattener';
 import { deduplicateAdjacentParagraphs } from './deduplication';
 import { evaluateAnomalyGate } from './anomalyGate';
 import { applyNovelProfile } from './profileApplier';
-import type { NovelProfile, SanitizeOptions, SanitizeResult } from './types';
+import type { SanitizeOptions, SanitizeResult } from './types';
 
 export * from './types';
 export * from './invisibility';
@@ -55,8 +55,8 @@ export function sanitizeChapter(
     };
   }
 
-  // Load DOM into Cheerio
-  const $ = cheerio.load(rawHtml);
+  // Load DOM into Cheerio without injecting <html><head> wrappers
+  const $ = cheerio.load(rawHtml, null, false);
 
   // 1. Apply novel-specific profile rules first if available
   if (options?.profile) {
@@ -76,13 +76,12 @@ export function sanitizeChapter(
   // 4. Run sliding-window deduplication for adjacent duplicate paragraphs
   if (options?.deduplicateAdjacent !== false) {
     const windowSize = options?.dedupWindowSize ?? 2;
-    const threshold = options?.dedupSimilarityThreshold ?? 0.85;
+    const threshold = options?.dedupSimilarityThreshold ?? 0.95;
     deduplicateAdjacentParagraphs($, windowSize, threshold);
   }
 
-  // Extract body contents or root HTML
-  let cleanHtml =
-    $('body').length > 0 ? $('body').html() || '' : $.html() || '';
+  // Extract cleaned HTML
+  const cleanHtml = $.html() || '';
 
   // Extract readable normalized text for TTS and metrics
   let rawText = '';
