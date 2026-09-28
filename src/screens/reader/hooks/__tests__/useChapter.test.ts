@@ -4,6 +4,7 @@ import NativeFile from '@modules/native-file';
 
 const mockUseNovelActions = jest.fn();
 const mockUseChapterGeneralSettings = jest.fn();
+const mockUseChapterReaderSettings = jest.fn();
 const mockUseLibrarySettings = jest.fn();
 const mockUseAppSettings = jest.fn();
 const mockUseTracker = jest.fn();
@@ -30,6 +31,7 @@ jest.mock('@screens/novel/NovelContext', () => ({
 
 jest.mock('@hooks/persisted', () => ({
   useChapterGeneralSettings: () => mockUseChapterGeneralSettings(),
+  useChapterReaderSettings: () => mockUseChapterReaderSettings(),
   useLibrarySettings: () => mockUseLibrarySettings(),
   useAppSettings: () => mockUseAppSettings(),
   useTracker: () => mockUseTracker(),
@@ -172,6 +174,9 @@ describe('useChapter', () => {
       autoScrollOffset: 100,
       useVolumeButtons: false,
       volumeButtonsOffset: 100,
+    });
+    mockUseChapterReaderSettings.mockReturnValue({
+      tts: undefined,
     });
     mockUseLibrarySettings.mockReturnValue({ incognitoMode: false });
     mockUseAppSettings.mockReturnValue({
